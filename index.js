@@ -22,10 +22,6 @@ var _differenceWith = require("lodash/differenceWith");
 
 var _differenceWith2 = _interopRequireDefault(_differenceWith);
 
-var _vis = require("vis");
-
-var _vis2 = _interopRequireDefault(_vis);
-
 var _uuid = require("uuid");
 
 var _uuid2 = _interopRequireDefault(_uuid);
@@ -35,19 +31,19 @@ var _propTypes = require("prop-types");
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
 
-var _data = require('./data.json');
+// var _data = require('./data.json');
 
-var _data2 = _interopRequireDefault(_data);
+// var _data2 = _interopRequireDefault(_data);
 
-var _config = require('./config');
+// var _config = require('./config');
 
-var _utilsService = require('./utils-service');
+// var _utilsService = require('./utils-service');
 
-var _deeplinkService = require('./deeplink-service');
+// var _deeplinkService = require('./deeplink-service');
 
-var _selectedNode = require('./selected-node');
+// var _selectedNode = require('./selected-node');
 
-var _selectedNode2 = _interopRequireDefault(_selectedNode);
+// var _selectedNode2 = _interopRequireDefault(_selectedNode);
 
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -467,32 +463,7 @@ var ProjectNode = function () {
  */
 
 function ProjectExplore(config_service) {
-  var _this = this;
-  var canvasEl = document.getElementById("canvasEL");
-  this.AMBIENCE_RANDOM_ACTION_INTERVAL = 1000;
-  this.AMBIENCE_WAIT_AFTER_USER_INPUT = 7000;
-  this.LAME_NODE_COUNT = 25;
-  this.canvas;
-  this.done = false;
-  this.context = canvasEl.getContext("2d");;
-  this.timer = window.requestAnimationFrame;
-  this.frameCount = 0;
-  this.nodes = [];
-  this.activeNode;
-  this.hoveredNode;
-  this.nextActionTime;
-  this.formVisible;
-  this.mousePos;
-  this.globalMousePos;
-  this.hovered = false;
-  this.pauseInteraction = false;
-  this.selected_project = {};
-  this.selected_project_changed = false;
-  this.hovered_project = {};
-  this.projects_subscription;
-  this.config_service = config_service;
-  this.canvas_width = config_service.MOBILE_WIDTH;
-  this.canvas_height = config_service.MOBILE_WIDTH;
+  
 
   /*
    * Navigate to the list view.
@@ -843,38 +814,7 @@ function ProjectExplore(config_service) {
     });
   };
 
-  /**
-   * Deselects all nodes.
-   */
-  this.selectNone = function () {
-    this.selected_project = {};
-    this.selected_project_changed = false;
 
-    var _iteratorNormalCompletion2 = true;
-    var _didIteratorError2 = false;
-    var _iteratorError2 = undefined;
-
-    try {
-      for (var _iterator2 = this.nodes[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-        var n = _step2.value;
-
-        n.deactivate();
-      }
-    } catch (err) {
-      _didIteratorError2 = true;
-      _iteratorError2 = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion2 && _iterator2.return) {
-          _iterator2.return();
-        }
-      } finally {
-        if (_didIteratorError2) {
-          throw _iteratorError2;
-        }
-      }
-    }
-  };
 
   /**
    * Select the node under a specific x, y coordinate.
@@ -964,61 +904,112 @@ var ReactCircular = function (_Component) {
     _classCallCheck(this, ReactCircular);
 
     var _this = _possibleConstructorReturn(this, (ReactCircular.__proto__ || Object.getPrototypeOf(ReactCircular)).call(this, props));
-
-    var identifier = props.identifier;
-
-    _this.updateGraph = _this.updateGraph.bind(_this);
-    _this.state = {
-      identifier: identifier !== undefined ? identifier : _uuid2.default.v4()
-    };
+    var _this = this;
+    this.AMBIENCE_RANDOM_ACTION_INTERVAL = 1000;
+    this.AMBIENCE_WAIT_AFTER_USER_INPUT = 7000;
+    this.LAME_NODE_COUNT = 25;
+    this.canvas;
+    this.done = false;
+    this.timer = window.requestAnimationFrame;
+    this.frameCount = 0;
+    this.nodes = [];
+    this.activeNode;
+    this.hoveredNode;
+    this.nextActionTime;
+    this.formVisible;
+    this.mousePos;
+    this.globalMousePos;
+    this.hovered = false;
+    this.pauseInteraction = false;
+    this.selected_project = {};
+    this.selected_project_changed = false;
+    this.hovered_project = {};
+    this.projects_subscription;
+    this.config_service = this.props.config;
+    this.canvas_width = this.props.config.MOBILE_WIDTH;
+    this.canvas_height = this.props.config.MOBILE_WIDTH;
     return _this;
   }
 
   _createClass(ReactCircular, [{
     key: "componentDidMount",
     value: function componentDidMount() {
-      _this.updateCanvas();
+      this.updateCanvas();
     }
   }, {
-      key: "updateCanvas",
-      value: function updateCanvas() {
+    key: "updateCanvas",
+    value: function updateCanvas() {
 
-        var _this4 = this;
+      var _this4 = this;
 
-        if (window.innerWidth < this.config_service.MOBILE_WIDTH) {
-          this.navigateToListView();
-        } else {
-          window.addEventListener('resize', function () {
-            if (window.innerWidth < _this4.config_service.MOBILE_WIDTH && _this4.router.url.indexOf('explore') > 0) {
-              _this4.navigateToListView();
+      if (window.innerWidth < this.props.config.MOBILE_WIDTH) {
+        this.navigateToListView();
+      } else {
+        window.addEventListener('resize', function () {
+          if (window.innerWidth < _this4.config_service.MOBILE_WIDTH && _this4.router.url.indexOf('explore') > 0) {
+            _this4.navigateToListView();
+          }
+        });
+      }
+
+      var dpi = window.devicePixelRatio || 1;
+      // this.canvas = document.getElementById("canvasEL");
+
+      // // Size the canvas based on device dpi
+      // this.canvas.width = this.canvas_width * dpi;
+      // this.canvas.height = this.canvas_height * dpi;
+
+      // Set 2d rendering context
+      this.context = this.refs.canvas.getContext('2d');
+      this.context.scale(dpi, dpi);
+
+      this.done = false;
+
+      // Reset language filters
+      // this.languages_service.selectedLanguages = [];
+
+      // Listen for projects to come back from API
+
+      this.selectNone();
+      this.loadProjects(this.props.data);
+      this.doRandomAction();
+      this.canvas.dispatchEvent(new Event('mousemove'));
+
+      return this.timer(this.update);
+    }
+  }, {
+    /**
+     * Deselects all nodes.
+     */
+      key: "selectNone",
+      value: function selectNone() {
+        this.selected_project = {};
+        this.selected_project_changed = false;
+
+        var _iteratorNormalCompletion2 = true;
+        var _didIteratorError2 = false;
+        var _iteratorError2 = undefined;
+
+        try {
+          for (var _iterator2 = this.nodes[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            var n = _step2.value;
+
+            n.deactivate();
+          }
+        } catch (err) {
+          _didIteratorError2 = true;
+          _iteratorError2 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion2 && _iterator2.return) {
+              _iterator2.return();
             }
-          });
+          } finally {
+            if (_didIteratorError2) {
+              throw _iteratorError2;
+            }
+          }
         }
-
-        var dpi = window.devicePixelRatio || 1;
-        // this.canvas = document.getElementById("canvasEL");
-
-        // // Size the canvas based on device dpi
-        // this.canvas.width = this.canvas_width * dpi;
-        // this.canvas.height = this.canvas_height * dpi;
-
-        // Set 2d rendering context
-        this.context = this.refs.canvas.getContext('2d');
-        this.context.scale(dpi, dpi);
-
-        this.done = false;
-
-        // Reset language filters
-        // this.languages_service.selectedLanguages = [];
-
-        // Listen for projects to come back from API
-
-        this.selectNone();
-        this.loadProjects(this.props.data);
-        this.doRandomAction();
-        this.canvas.dispatchEvent(new Event('mousemove'));
-
-        return this.timer(this.update);
       }
   },{
     key: "shouldComponentUpdate",
@@ -1035,7 +1026,7 @@ var ReactCircular = function (_Component) {
     value: function render() {
       var width = this.props.width;
       var height = this.props.height;
-      
+
       return _react2.default.createElement('canvas', { ref: 'canvas', width: 300, height: 300 });
     }
   }]);
