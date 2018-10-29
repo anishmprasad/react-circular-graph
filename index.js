@@ -30,6 +30,8 @@ var _propTypes = require("prop-types");
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
+require('zone.js/dist/zone-node.js');
+
 
 // var _data = require('./data.json');
 
@@ -463,7 +465,7 @@ var ProjectNode = function () {
  */
 
 function ProjectExplore(config_service) {
-  
+
 
   /*
    * Navigate to the list view.
@@ -473,71 +475,9 @@ function ProjectExplore(config_service) {
     this.router.navigate(['/list', 'featured']);
   };
 
-  /**
-   * Gets projects from `projects_service` and creates a new `ProjectNode` for
-   * each.
-   */
-  this.loadProjects = function (p) {
-    var projects = p.slice();
-    var lame_node = { lame: true };
-    var _that = this;
-    _that.nodes = [];
-    var lame_index = 0;
 
-    while (lame_index < this.LAME_NODE_COUNT) {
-      projects.push(lame_node);
-      lame_index++;
-    }
 
-    projects.forEach(function (project, index) {
-      if (index > 15 && !project.lame) {
-        project.small = true;
-      }
-      _that.nodes.push(new ProjectNode(project));
-    });
-  };
 
-  /**
-   * Global click handler. Determines coordinates of click, whether a node was
-   * clicked, and routes the action accordingly.
-   * @param evt  click event.
-   */
-  this.clickHandler = function (evt) {
-    var box = this.canvas.getBoundingClientRect();
-    var coords = {
-      x: evt.pageX - box.left - window.pageXOffset,
-      y: evt.pageY - box.top - window.pageYOffset
-    };
-    var clicked_node = this.getNodeUnder(coords.x - this.canvas_width / 2, coords.y - this.canvas_height / 2);
-    if (clicked_node) {
-      if (clicked_node.active) {
-        clicked_node.onClick();
-      } else {
-        this.selectNone();
-        clicked_node.onClick();
-        this.selectProject(clicked_node);
-      }
-      // this.utils_service.trackEvent(
-      //     'Projects_Explore', 'Click', 'Bubble ' + clicked_node.data.name);
-    } else {
-      this.selectNone();
-    }
-    this.userActionOccurred();
-  };
-
-  /**
-   * Selects a given node (project).
-   * @param node  the project object to be selected.
-   */
-  this.selectProject = function (node) {
-    var _this3 = this;
-
-    (0, _selectedNode2.default)(node);
-    this.selected_project = node.data;
-    setTimeout(function () {
-      _this3.selected_project_changed = true;
-    }, 200);
-  };
 
   /**
    * Global mouse move handler. Determines coordinates of mouse and updates the
@@ -607,37 +547,6 @@ function ProjectExplore(config_service) {
     this.hovered = false;
   };
 
-  /**
-   * update is the body of the animation loop. Controls canvas rendering.
-   * Called once every timer tick.
-   */
-  this.update = function () {
-    if (_this.done) {
-      return;
-    }
-
-    _this.render(_this.context);
-    _this.hoverHandler();
-
-    if (_this.nodes.length) {
-      _this.frameCount += 1;
-    }
-
-    if (_this.frameCount == 1) {
-      _this.ambientActionOccurred();
-    }
-
-    _this.createLinks();
-
-    _this.nodes.forEach(function (node) {
-      node.updateMousePos(_this.mousePos);
-      node.update(_this.hoveredNode == node);
-    });
-
-    _this.updateAmbience();
-
-    return _this.timer(_this.update);
-  };
 
   /**
    * Draws lines from/to random project nodes.
@@ -672,149 +581,6 @@ function ProjectExplore(config_service) {
       }
     }
   };
-
-  /**
-   * The convas renderer. Everything is drawn into the canvas here.
-   */
-  this.render = function (ctx) {
-    ctx.clearRect(0, 0, this.canvas_width, this.canvas_height);
-    ctx.save();
-    ctx.translate(this.canvas_width / 2, this.canvas_height / 2);
-
-    // Lines on bottom
-    // FF Can't deal with stroked shapes
-    if ("chrome" !== 'Firefox') {
-      this.nodes.forEach(function (node, index) {
-        node.renderLink(ctx);
-      });
-    }
-
-    // Lame (gray non-interactive) nodes next
-    this.nodes.forEach(function (node, index) {
-      if (node.data.lame && !node.active) {
-        node.render(ctx);
-      }
-    });
-
-    // Then small colored project nodes
-    this.nodes.forEach(function (node, index) {
-      if (!node.data.lame && !node.active && node.data.small) {
-        node.render(ctx);
-      }
-    });
-
-    // Then large colored project nodes with logo
-    this.nodes.forEach(function (node, index) {
-      if (!node.data.lame && !node.active && !node.data.small && !node.data.focus) {
-        node.render(ctx);
-      }
-    });
-
-    // Hovered next
-    this.nodes.forEach(function (node, index) {
-      if (!node.data.lame && !node.active && node.data.focus) {
-        node.render(ctx);
-      }
-    });
-
-    // Selected node on top
-    this.nodes.forEach(function (node, index) {
-      if (!node.data.lame && node.active) {
-        node.render(ctx);
-      }
-    });
-
-    ctx.restore();
-  };
-
-  /**
-   * Sets `nextActionTime` Date object.
-   * @param offset  in milliseconds
-   */
-  this.setNextActionDelay = function (offset) {
-    this.nextActionTime = new Date(new Date().getTime() + offset);
-  };
-
-  /**
-   * Sets `nextActionTime` Date object and selects active node.
-   */
-  this.userActionOccurred = function () {
-    this.setNextActionDelay(this.AMBIENCE_WAIT_AFTER_USER_INPUT);
-    this.activeNode = this.getActiveNodes()[0];
-  };
-
-  /**
-   * Selects active node.
-   */
-  this.ambientActionOccurred = function () {
-    this.activeNode = this.getActiveNodes()[0];
-  };
-
-  /**
-   * Gets `nextActionTime` Date object minus current time.
-   */
-  this.timeUntilNextAction = function () {
-    return this.nextActionTime - new Date().getTime();
-  };
-
-  /**
-   * Does random action when `timeUntilNextAction` gets to 0.
-   */
-  this.updateAmbience = function () {
-    if (this.timeUntilNextAction() < 0) {
-      this.doRandomAction();
-      return this.ambientActionOccurred();
-    }
-  };
-
-  /**
-   * Filters nodes by `active` attribute.
-   */
-  this.getActiveNodes = function () {
-    return this.nodes.filter(function (n) {
-      return n.active;
-    });
-  };
-
-  /**
-   * Activates a random node.
-   *
-   * This method controls which nodes end up in the center, and for how
-   * long (unless overridden by user input.)
-   */
-  this.doRandomAction = function () {
-    var node = void 0;
-    var filteredNodes = this.filterLames();
-    if (this.pauseInteraction) {
-      return;
-    }
-
-    if (this.getActiveNodes().length) {
-      // make the current node leave the center and schedule the next
-      // action.
-      this.setNextActionDelay(this.AMBIENCE_RANDOM_ACTION_INTERVAL);
-      return this.selectNone();
-    } else {
-      // pick a random node to display in the center
-      node = filteredNodes[Math.floor(Math.random() * filteredNodes.length)];
-      if (node != null) {
-        this.setNextActionDelay(this.AMBIENCE_WAIT_AFTER_USER_INPUT);
-        node.activate();
-        this.selectProject(node);
-      }
-    }
-  };
-
-  /**
-   * Filters out the grey (lame) nodes.
-   */
-  this.filterLames = function () {
-    return this.nodes.filter(function (node) {
-      return !node.data.lame;
-    });
-  };
-
-
 
   /**
    * Select the node under a specific x, y coordinate.
@@ -973,45 +739,301 @@ var ReactCircular = function (_Component) {
       this.selectNone();
       this.loadProjects(this.props.data);
       this.doRandomAction();
-      this.canvas.dispatchEvent(new Event('mousemove'));
+      this.refs.canvas.dispatchEvent(new Event('mousemove'));
 
       return this.timer(this.update);
     }
   }, {
     /**
+   * Gets projects from `projects_service` and creates a new `ProjectNode` for
+   * each.
+   */
+    key: "loadProjects",
+    value: function loadProjects(p) {
+      var projects = p.slice();
+      var lame_node = { lame: true };
+      var _that = this;
+      _that.nodes = [];
+      var lame_index = 0;
+
+      while (lame_index < this.LAME_NODE_COUNT) {
+        projects.push(lame_node);
+        lame_index++;
+      }
+
+      projects.forEach(function (project, index) {
+        if (index > 15 && !project.lame) {
+          project.small = true;
+        }
+        _that.nodes.push(new ProjectNode(project));
+      });
+    }
+  }, {
+    /**
+   * Activates a random node.
+   *
+   * This method controls which nodes end up in the center, and for how
+   * long (unless overridden by user input.)
+   */
+    key: "doRandomAction",
+    value: function doRandomAction() {
+      var node = void 0;
+      var filteredNodes = this.filterLames();
+      if (this.pauseInteraction) {
+        return;
+      }
+
+      if (this.getActiveNodes().length) {
+        // make the current node leave the center and schedule the next
+        // action.
+        this.setNextActionDelay(this.AMBIENCE_RANDOM_ACTION_INTERVAL);
+        return this.selectNone();
+      } else {
+        // pick a random node to display in the center
+        node = filteredNodes[Math.floor(Math.random() * filteredNodes.length)];
+        if (node != null) {
+          this.setNextActionDelay(this.AMBIENCE_WAIT_AFTER_USER_INPUT);
+          node.activate();
+          this.selectProject(node);
+        }
+      }
+    }
+  }, {
+    /**
+   * Filters out the grey (lame) nodes.
+   */
+    key: "filterLames",
+    value: function filterLames() {
+      return this.nodes.filter(function (node) {
+        return !node.data.lame;
+      });
+    }
+  }, {
+    /**
+ * Filters nodes by `active` attribute.
+ */
+    key: "getActiveNodes",
+    value: function getActiveNodes() {
+      return this.nodes.filter(function (n) {
+        return n.active;
+      });
+    }
+  }, {
+    /**
+ * Sets `nextActionTime` Date object.
+ * @param offset  in milliseconds
+ */
+    key: "setNextActionDelay",
+    value: function setNextActionDelay(offset) {
+      this.nextActionTime = new Date(new Date().getTime() + offset);
+    }
+  }, {
+    /**
+ * Sets `nextActionTime` Date object and selects active node.
+ */
+    key: "userActionOccurred",
+    value: function userActionOccurred() {
+      this.setNextActionDelay(this.AMBIENCE_WAIT_AFTER_USER_INPUT);
+      this.activeNode = this.getActiveNodes()[0];
+    }
+
+
+  }, {
+    /**
+ * Selects active node.
+ */
+    key: "ambientActionOccurred",
+    value: function ambientActionOccurred() {
+      this.activeNode = this.getActiveNodes()[0];
+    }
+  }, {
+    /**
+     * Gets `nextActionTime` Date object minus current time.
+     */
+    key: "timeUntilNextAction",
+    value: function timeUntilNextAction() {
+      return this.nextActionTime - new Date().getTime();
+    }
+  }, {
+
+    /**
+     * Does random action when `timeUntilNextAction` gets to 0.
+     */
+    key: "updateAmbience",
+    value: function updateAmbience() {
+      if (this.timeUntilNextAction() < 0) {
+        this.doRandomAction();
+        return this.ambientActionOccurred();
+      }
+    }
+  }, {
+    /**
+      * Global click handler. Determines coordinates of click, whether a node was
+      * clicked, and routes the action accordingly.
+      * @param evt  click event.
+      */
+    key: "clickHandler",
+    value: function clickHandler(evt) {
+      var box = this.canvas.getBoundingClientRect();
+      var coords = {
+        x: evt.pageX - box.left - window.pageXOffset,
+        y: evt.pageY - box.top - window.pageYOffset
+      };
+      var clicked_node = this.getNodeUnder(coords.x - this.canvas_width / 2, coords.y - this.canvas_height / 2);
+      if (clicked_node) {
+        if (clicked_node.active) {
+          clicked_node.onClick();
+        } else {
+          this.selectNone();
+          clicked_node.onClick();
+          this.selectProject(clicked_node);
+        }
+        // this.utils_service.trackEvent(
+        //     'Projects_Explore', 'Click', 'Bubble ' + clicked_node.data.name);
+      } else {
+        this.selectNone();
+      }
+      this.userActionOccurred();
+    }
+  }, {
+
+    /**
+     * Selects a given node (project).
+     * @param node  the project object to be selected.
+     */
+    key: "selectProject",
+    value: function selectProject(node) {
+      var _this3 = this;
+      this.props.selectedNode && this.props.selectedNode()
+      this.selected_project = node.data;
+      setTimeout(function () {
+        _this3.selected_project_changed = true;
+      }, 200);
+    }
+  }, {
+    /**
      * Deselects all nodes.
      */
-      key: "selectNone",
-      value: function selectNone() {
-        this.selected_project = {};
-        this.selected_project_changed = false;
+    key: "selectNone",
+    value: function selectNone() {
+      this.selected_project = {};
+      this.selected_project_changed = false;
 
-        var _iteratorNormalCompletion2 = true;
-        var _didIteratorError2 = false;
-        var _iteratorError2 = undefined;
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
 
+      try {
+        for (var _iterator2 = this.nodes[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var n = _step2.value;
+
+          n.deactivate();
+        }
+      } catch (err) {
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
+      } finally {
         try {
-          for (var _iterator2 = this.nodes[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-            var n = _step2.value;
-
-            n.deactivate();
+          if (!_iteratorNormalCompletion2 && _iterator2.return) {
+            _iterator2.return();
           }
-        } catch (err) {
-          _didIteratorError2 = true;
-          _iteratorError2 = err;
         } finally {
-          try {
-            if (!_iteratorNormalCompletion2 && _iterator2.return) {
-              _iterator2.return();
-            }
-          } finally {
-            if (_didIteratorError2) {
-              throw _iteratorError2;
-            }
+          if (_didIteratorError2) {
+            throw _iteratorError2;
           }
         }
       }
-  },{
+    }
+  }, {
+    /**
+     * update is the body of the animation loop. Controls canvas rendering.
+     * Called once every timer tick.
+     */
+    key: "update",
+    value: function update() {
+      console.log(this)
+      if (_this.done) {
+        return;
+      }
+
+      _this.render(_this.context);
+      _this.hoverHandler();
+
+      if (_this.nodes.length) {
+        _this.frameCount += 1;
+      }
+
+      if (_this.frameCount == 1) {
+        _this.ambientActionOccurred();
+      }
+
+      _this.createLinks();
+
+      _this.nodes.forEach(function (node) {
+        node.updateMousePos(_this.mousePos);
+        node.update(_this.hoveredNode == node);
+      });
+
+      _this.updateAmbience();
+
+      return _this.timer(_this.update);
+    }
+  }, {
+    /**
+     * The convas renderer. Everything is drawn into the canvas here.
+     */
+    key: "render",
+    value: function render(ctx) {
+      ctx.clearRect(0, 0, this.canvas_width, this.canvas_height);
+      ctx.save();
+      ctx.translate(this.canvas_width / 2, this.canvas_height / 2);
+
+      // Lines on bottom
+      // FF Can't deal with stroked shapes
+      if ("chrome" !== 'Firefox') {
+        this.nodes.forEach(function (node, index) {
+          node.renderLink(ctx);
+        });
+      }
+
+      // Lame (gray non-interactive) nodes next
+      this.nodes.forEach(function (node, index) {
+        if (node.data.lame && !node.active) {
+          node.render(ctx);
+        }
+      });
+
+      // Then small colored project nodes
+      this.nodes.forEach(function (node, index) {
+        if (!node.data.lame && !node.active && node.data.small) {
+          node.render(ctx);
+        }
+      });
+
+      // Then large colored project nodes with logo
+      this.nodes.forEach(function (node, index) {
+        if (!node.data.lame && !node.active && !node.data.small && !node.data.focus) {
+          node.render(ctx);
+        }
+      });
+
+      // Hovered next
+      this.nodes.forEach(function (node, index) {
+        if (!node.data.lame && !node.active && node.data.focus) {
+          node.render(ctx);
+        }
+      });
+
+      // Selected node on top
+      this.nodes.forEach(function (node, index) {
+        if (!node.data.lame && node.active) {
+          node.render(ctx);
+        }
+      });
+
+      ctx.restore();
+    }
+  }, {
     key: "shouldComponentUpdate",
     value: function shouldComponentUpdate(nextProps, nextState) {
 
@@ -1039,11 +1061,7 @@ ReactCircular.defaultProps = {
   style: { width: "100%", height: "100%" }
 };
 ReactCircular.propTypes = {
-  graph: _propTypes2.default.object,
-  style: _propTypes2.default.object,
-  getNetwork: _propTypes2.default.func,
-  getNodes: _propTypes2.default.func,
-  getEdges: _propTypes2.default.func
+  graph: _propTypes2.default.object
 };
 
 exports.default = ReactCircular;
