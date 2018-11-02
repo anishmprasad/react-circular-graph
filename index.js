@@ -465,13 +465,13 @@ var ProjectNode = function () {
 //   this.done = true;
 // };
 
-var ReactCircular = function (_Component) {
-  _inherits(ReactCircular, _Component);
+var ReactCircularGraph = function (_Component) {
+  _inherits(ReactCircularGraph, _Component);
 
-  function ReactCircular(props) {
-    _classCallCheck(this, ReactCircular);
+  function ReactCircularGraph(props) {
+    _classCallCheck(this, ReactCircularGraph);
 
-    var _this = _possibleConstructorReturn(this, (ReactCircular.__proto__ || Object.getPrototypeOf(ReactCircular)).call(this, props));
+    var _this = _possibleConstructorReturn(this, (ReactCircularGraph.__proto__ || Object.getPrototypeOf(ReactCircularGraph)).call(this, props));
     var _this = this;
     this.AMBIENCE_RANDOM_ACTION_INTERVAL = 1000;
     this.AMBIENCE_WAIT_AFTER_USER_INPUT = 7000;
@@ -499,7 +499,7 @@ var ReactCircular = function (_Component) {
     return _this;
   }
 
-  _createClass(ReactCircular, [{
+  _createClass(ReactCircularGraph, [{
     key: "componentDidMount",
     value: function componentDidMount() {
       this.updateCanvas();
@@ -1067,10 +1067,10 @@ var ReactCircular = function (_Component) {
     }
   }]);
 
-  return ReactCircular;
+  return ReactCircularGraph;
 }(_react.Component);
 
-ReactCircular.defaultProps = {
+ReactCircularGraph.defaultProps = {
   width: 720,
   height: 720,
   data: [
@@ -1088,7 +1088,7 @@ ReactCircular.defaultProps = {
     },
   ]
 };
-ReactCircular.propTypes = {
+ReactCircularGraph.propTypes = {
   width: _propTypes2.default.number,
   height: _propTypes2.default.number,
   data: _propTypes2.default.array.isRequired,
@@ -1096,4 +1096,4 @@ ReactCircular.propTypes = {
   selectedNode: _propTypes2.default.func
 };
 
-exports.default = ReactCircular;
+exports.default = ReactCircularGraph;
