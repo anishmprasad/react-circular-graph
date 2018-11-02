@@ -30,7 +30,7 @@ var _propTypes = require("prop-types");
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-require('zone.js/dist/zone-node.js');
+// require('zone.js/dist/zone-node.js');
 
 
 // var _data = require('./data.json');
@@ -467,188 +467,6 @@ var ProjectNode = function () {
 function ProjectExplore(config_service) {
 
 
-  /*
-   * Navigate to the list view.
-   */
-  this.navigateToListView = function () {
-    this.projects_service.requestParams.page_size = this.config_service.LIST_PAGE_SIZE;
-    this.router.navigate(['/list', 'featured']);
-  };
-
-
-
-
-
-  /**
-   * Global mouse move handler. Determines coordinates of mouse and updates the
-   * `globalMousePos` and `mousePos` objects.
-   * @param evt  mouse move event.
-   */
-  this.moveHandler = function (evt) {
-    this.hoveredNode = this.mousePos ? this.getNodeUnder(this.mousePos.x, this.mousePos.y) : null;
-
-    var box = this.canvas.getBoundingClientRect();
-    this.globalMousePos = {
-      x: evt.pageX - box.left - window.pageXOffset,
-      y: evt.pageY - box.top - window.pageYOffset
-    };
-    this.mousePos = new Vector(this.globalMousePos.x - this.canvas_width / 2, this.globalMousePos.y - this.canvas_height / 2, 0);
-    evt.preventDefault();
-    evt.stopPropagation();
-  };
-
-  /**
-   * Figures out which node (project) was hovered.
-   * @param evt  click event.
-   */
-  this.hoverHandler = function () {
-    if (!this.mousePos) {
-      return;
-    }
-    var new_hovered_node = this.getNodeUnder(this.mousePos.x, this.mousePos.y);
-    this.clearHoverStyles();
-
-    if (this.hoveredNode && new_hovered_node) {
-      this.setHoverStyles(new_hovered_node);
-    }
-
-    if (!this.hovered && this.hoveredNode && this.hoveredNode.data.small) {
-      this.hoveredNode.fadeCount = 0;
-    }
-  };
-
-  /**
-   * Sets styles when a node is hovered.
-   * @param new_hovered_node  project node being hovered.
-   */
-  this.setHoverStyles = function (new_hovered_node) {
-    this.canvas.style.cursor = 'pointer';
-    this.hovered_project = new_hovered_node;
-
-    if (new_hovered_node.data.name != this.hoveredNode.data.name && this.hoveredNode.small) {
-      new_hovered_node.data.focus = true;
-      new_hovered_node.fadeCount = 0;
-      this.hoveredNode.data.focus = false;
-    } else {
-      new_hovered_node.data.focus = false;
-      this.hoveredNode.data.focus = true;
-    }
-    this.hovered = true;
-  };
-
-  /**
-   * Removes styles when a node is NOT hovered.
-   */
-  this.clearHoverStyles = function () {
-    this.canvas.style.cursor = 'default';
-    this.nodes.forEach(function (node) {
-      node.data.focus = false;
-    });
-    this.hovered = false;
-  };
-
-
-  /**
-   * Draws lines from/to random project nodes.
-   */
-  this.createLinks = function () {
-    var _iteratorNormalCompletion = true;
-    var _didIteratorError = false;
-    var _iteratorError = undefined;
-
-    try {
-      for (var _iterator = this.nodes[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-        var n = _step.value;
-
-        if (n.link != null) {
-          continue;
-        }
-        // # continue if Math.random() > 0.9
-        n.linkTo(this.nodes[Math.floor(Math.random() * this.nodes.length)]);
-      }
-    } catch (err) {
-      _didIteratorError = true;
-      _iteratorError = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion && _iterator.return) {
-          _iterator.return();
-        }
-      } finally {
-        if (_didIteratorError) {
-          throw _iteratorError;
-        }
-      }
-    }
-  };
-
-  /**
-   * Select the node under a specific x, y coordinate.
-   * @param x  x coord.
-   * @param y  y coord.
-   */
-  this.getNodeUnder = function (x, y) {
-    var nodes = [];
-    var chosen = null;
-
-    for (var i = this.nodes.length - 1; i >= 0; i += -1) {
-      var n = this.nodes[i];
-      if (n.hitTest(x, y) && !n.data.lame) {
-        nodes.push(n);
-      }
-    }
-    nodes.forEach(function (node) {
-      if (!node.data.small) {
-        chosen = node;
-      }
-    });
-    return nodes.length && !chosen ? nodes[0] : chosen;
-  };
-
-  /**
-   * Navigate to a project's details page.
-   * @param evt  mouse event.
-   */
-  this.loadProjectDetails = function (evt) {
-    this.projects_service.cachedColor = this.selected_project.fallbackColor || this.selected_project.primaryColor;
-
-    this.router.navigate(['/', this.selected_project.id]);
-
-    // this.utils_service.trackEvent(
-    //     'Projects_Explore', 'Click', 'View ' + this.selected_project.name);
-    evt.preventDefault();
-    evt.stopPropogation;
-  };
-
-  /**
-   * Carousel algorithm to next/back through projects.
-   * @param direction  iterator to go up or down `+1` or `-1`.
-   * @param $event  mouse event.
-   */
-  this.clickedArrow = function (direction, $event) {
-    var currentIndex = 0;
-    var newIndex = void 0;
-    var chosen = void 0;
-    var filteredNodes = this.filterLames();
-
-    filteredNodes.forEach(function (node, index) {
-      if (node.active) {
-        currentIndex = index;
-      }
-    });
-
-    newIndex = this.utils_service.modulo(currentIndex + direction, filteredNodes.length);
-    this.selectNone();
-    chosen = filteredNodes[newIndex];
-    chosen.activate();
-    this.selectProject(chosen);
-    this.userActionOccurred();
-
-    // this.utils_service.trackEvent(
-    //     'Projects_Explore', 'Click', 'Cycle ' + direction);
-
-    $event.stopPropagation();
-  };
 }
 
 /**
@@ -740,8 +558,8 @@ var ReactCircular = function (_Component) {
       this.loadProjects(this.props.data);
       this.doRandomAction();
       this.refs.canvas.dispatchEvent(new Event('mousemove'));
-
-      return this.timer(this.update);
+      // return setInterval(() => {this.update()}, 1000/60)
+      return requestAnimationFrame(this.update.bind(this));
     }
   }, {
     /**
@@ -897,6 +715,195 @@ var ReactCircular = function (_Component) {
     }
   }, {
 
+    /*
+    * Navigate to the list view.
+    */
+    key: "navigateToListView",
+    value: function navigateToListView() {
+      this.projects_service.requestParams.page_size = this.config_service.LIST_PAGE_SIZE;
+      this.router.navigate(['/list', 'featured']);
+    }
+  }, {
+
+    /**
+     * Global mouse move handler. Determines coordinates of mouse and updates the
+     * `globalMousePos` and `mousePos` objects.
+     * @param evt  mouse move event.
+     */
+    key: "moveHandler",
+    value: function moveHandler(evt) {
+      this.hoveredNode = this.mousePos ? this.getNodeUnder(this.mousePos.x, this.mousePos.y) : null;
+
+      var box = this.canvas.getBoundingClientRect();
+      this.globalMousePos = {
+        x: evt.pageX - box.left - window.pageXOffset,
+        y: evt.pageY - box.top - window.pageYOffset
+      };
+      this.mousePos = new Vector(this.globalMousePos.x - this.canvas_width / 2, this.globalMousePos.y - this.canvas_height / 2, 0);
+      evt.preventDefault();
+      evt.stopPropagation();
+    }
+
+  }, {      /**
+       * Figures out which node (project) was hovered.
+       * @param evt  click event.
+       */
+    key: "hoverHandler",
+    value: function hoverHandler() {
+      if (!this.mousePos) {
+        return;
+      }
+      var new_hovered_node = this.getNodeUnder(this.mousePos.x, this.mousePos.y);
+      this.clearHoverStyles();
+
+      if (this.hoveredNode && new_hovered_node) {
+        this.setHoverStyles(new_hovered_node);
+      }
+
+      if (!this.hovered && this.hoveredNode && this.hoveredNode.data.small) {
+        this.hoveredNode.fadeCount = 0;
+      }
+    }
+  }, {
+    /**
+     * Sets styles when a node is hovered.
+     * @param new_hovered_node  project node being hovered.
+     */
+    key: "setHoverStyles",
+    value: function setHoverStyles(new_hovered_node) {
+      this.canvas.style.cursor = 'pointer';
+      this.hovered_project = new_hovered_node;
+
+      if (new_hovered_node.data.name != this.hoveredNode.data.name && this.hoveredNode.small) {
+        new_hovered_node.data.focus = true;
+        new_hovered_node.fadeCount = 0;
+        this.hoveredNode.data.focus = false;
+      } else {
+        new_hovered_node.data.focus = false;
+        this.hoveredNode.data.focus = true;
+      }
+      this.hovered = true;
+    }
+  }, {
+    /**
+     * Carousel algorithm to next/back through projects.
+     * @param direction  iterator to go up or down `+1` or `-1`.
+     * @param $event  mouse event.
+     */
+    key: "setHoverStyles",
+    value: function setHoverStyles(direction, $event) {
+      var currentIndex = 0;
+      var newIndex = void 0;
+      var chosen = void 0;
+      var filteredNodes = this.filterLames();
+
+      filteredNodes.forEach(function (node, index) {
+        if (node.active) {
+          currentIndex = index;
+        }
+      });
+
+      newIndex = this.utils_service.modulo(currentIndex + direction, filteredNodes.length);
+      this.selectNone();
+      chosen = filteredNodes[newIndex];
+      chosen.activate();
+      this.selectProject(chosen);
+      this.userActionOccurred();
+
+      // this.utils_service.trackEvent(
+      // 'Projects_Explore', 'Click', 'Cycle ' + direction);
+
+      $event.stopPropagation();
+    }
+  }, {
+    /**
+     * Navigate to a project's details page.
+     * @param evt  mouse event.
+     */
+    key: "loadProjectDetails",
+    value: function loadProjectDetails(evt) {
+      this.projects_service.cachedColor = this.selected_project.fallbackColor || this.selected_project.primaryColor;
+
+      this.router.navigate(['/', this.selected_project.id]);
+
+      // this.utils_service.trackEvent(
+      //     'Projects_Explore', 'Click', 'View ' + this.selected_project.name);
+      evt.preventDefault();
+      evt.stopPropogation;
+    }
+  }, {
+    /**
+     * Select the node under a specific x, y coordinate.
+     * @param x  x coord.
+     * @param y  y coord.
+     */
+    key: "getNodeUnder",
+    value: function getNodeUnder(x, y) {
+      var nodes = [];
+      var chosen = null;
+
+      for (var i = this.nodes.length - 1; i >= 0; i += -1) {
+        var n = this.nodes[i];
+        if (n.hitTest(x, y) && !n.data.lame) {
+          nodes.push(n);
+        }
+      }
+      nodes.forEach(function (node) {
+        if (!node.data.small) {
+          chosen = node;
+        }
+      });
+      return nodes.length && !chosen ? nodes[0] : chosen;
+    }
+  }, {
+    /**
+      * Draws lines from/to random project nodes.
+      */
+    key: "createLinks",
+    value: function createLinks() {
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = this.nodes[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var n = _step.value;
+
+          if (n.link != null) {
+            continue;
+          }
+          // # continue if Math.random() > 0.9
+          n.linkTo(this.nodes[Math.floor(Math.random() * this.nodes.length)]);
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+    }
+  }, {
+    /**
+     * Removes styles when a node is NOT hovered.
+     */
+    key: "clearHoverStyles",
+    value: function clearHoverStyles() {
+      this.canvas.style.cursor = 'default';
+      this.nodes.forEach(function (node) {
+        node.data.focus = false;
+      });
+      this.hovered = false;
+    }
+  }, {
+
     /**
      * Selects a given node (project).
      * @param node  the project object to be selected.
@@ -951,39 +958,37 @@ var ReactCircular = function (_Component) {
      */
     key: "update",
     value: function update() {
-      console.log(this)
-      if (_this.done) {
+      if (this.done) {
         return;
       }
+      this.canvasrender(this.context);
+      this.hoverHandler();
 
-      _this.render(_this.context);
-      _this.hoverHandler();
-
-      if (_this.nodes.length) {
-        _this.frameCount += 1;
+      if (this.nodes.length) {
+        this.frameCount += 1;
       }
 
-      if (_this.frameCount == 1) {
-        _this.ambientActionOccurred();
+      if (this.frameCount == 1) {
+        this.ambientActionOccurred();
       }
 
-      _this.createLinks();
+      this.createLinks();
 
-      _this.nodes.forEach(function (node) {
-        node.updateMousePos(_this.mousePos);
-        node.update(_this.hoveredNode == node);
-      });
+      this.nodes.forEach(function (node) {
+        node.updateMousePos(this.mousePos);
+        node.update(this.hoveredNode == node);
+      }.bind(this));
 
-      _this.updateAmbience();
-
-      return _this.timer(_this.update);
+      this.updateAmbience();
+      // return setInterval(()=>{this.update()},1000/60)
+      return requestAnimationFrame(this.update.bind(this));
     }
   }, {
     /**
-     * The convas renderer. Everything is drawn into the canvas here.
+     * The canvas renderer. Everything is drawn into the canvas here.
      */
-    key: "render",
-    value: function render(ctx) {
+    key: "canvasrender",
+    value: function canvasrender(ctx) {
       ctx.clearRect(0, 0, this.canvas_width, this.canvas_height);
       ctx.save();
       ctx.translate(this.canvas_width / 2, this.canvas_height / 2);
@@ -1049,7 +1054,7 @@ var ReactCircular = function (_Component) {
       var width = this.props.width;
       var height = this.props.height;
 
-      return _react2.default.createElement('canvas', { ref: 'canvas', width: 300, height: 300 });
+      return _react2.default.createElement('canvas', { ref: 'canvas', width: 800, height: 800 });
     }
   }]);
 
@@ -1061,7 +1066,11 @@ ReactCircular.defaultProps = {
   style: { width: "100%", height: "100%" }
 };
 ReactCircular.propTypes = {
-  graph: _propTypes2.default.object
+  graph: _propTypes2.default.object,
+  style: _propTypes2.default.object,
+  getNetwork: _propTypes2.default.func,
+  getNodes: _propTypes2.default.func,
+  getEdges: _propTypes2.default.func
 };
 
 exports.default = ReactCircular;
