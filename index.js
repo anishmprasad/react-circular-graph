@@ -460,26 +460,10 @@ var ProjectNode = function () {
   return ProjectNode;
 }();
 
-/**
- * Project explore component canvas renderer.
- */
 
-function ProjectExplore(config_service) {
-
-
-}
-
-/**
- * If on a screen narrower than MOBILE_WIDTH, do not render and navigate to
- * list page.
- */
-ProjectExplore.prototype.onInit = function () {
-
-};
-
-ProjectExplore.prototype.onDestroy = function () {
-  this.done = true;
-};
+// ProjectExplore.prototype.onDestroy = function () {
+//   this.done = true;
+// };
 
 var ReactCircular = function (_Component) {
   _inherits(ReactCircular, _Component);
@@ -510,8 +494,8 @@ var ReactCircular = function (_Component) {
     this.hovered_project = {};
     this.projects_subscription;
     this.config_service = this.props.config;
-    this.canvas_width = this.props.config.MOBILE_WIDTH;
-    this.canvas_height = this.props.config.MOBILE_WIDTH;
+    this.canvas_width = this.props.width;
+    this.canvas_height = this.props.height;
     return _this;
   }
 
@@ -536,12 +520,11 @@ var ReactCircular = function (_Component) {
         });
       }
 
-      var dpi = window.devicePixelRatio || 1;
+      var dpi = 1;
       // this.canvas = document.getElementById("canvasEL");
-
-      // // Size the canvas based on device dpi
-      // this.canvas.width = this.canvas_width * dpi;
-      // this.canvas.height = this.canvas_height * dpi;
+      // Size the canvas based on device dpi
+      this.refs.canvas.width = this.canvas_width * dpi;
+      this.refs.canvas.height = this.canvas_height * dpi;
 
       // Set 2d rendering context
       this.context = this.refs.canvas.getContext('2d');
@@ -558,6 +541,20 @@ var ReactCircular = function (_Component) {
       this.loadProjects(this.props.data);
       this.doRandomAction();
       this.refs.canvas.dispatchEvent(new Event('mousemove'));
+
+      this.refs.canvas.addEventListener('mousemove', (event) => {
+        console.log('mousemove')
+        this.moveHandler(event)
+      })
+      this.refs.canvas.addEventListener('click', (event) => {
+        this.clickHandler(event)
+      })
+      this.refs.canvas.addEventListener('mouseover', (event) => {
+        this.pauseInteraction = true;
+      })
+      this.refs.canvas.addEventListener('mouseout', (event) => {
+        this.pauseInteraction = false;
+      })
       // return setInterval(() => {this.update()}, 1000/60)
       return requestAnimationFrame(this.update.bind(this));
     }
@@ -692,7 +689,7 @@ var ReactCircular = function (_Component) {
       */
     key: "clickHandler",
     value: function clickHandler(evt) {
-      var box = this.canvas.getBoundingClientRect();
+      var box = this.refs.canvas.getBoundingClientRect();
       var coords = {
         x: evt.pageX - box.left - window.pageXOffset,
         y: evt.pageY - box.top - window.pageYOffset
@@ -721,7 +718,7 @@ var ReactCircular = function (_Component) {
     key: "navigateToListView",
     value: function navigateToListView() {
       this.projects_service.requestParams.page_size = this.config_service.LIST_PAGE_SIZE;
-      this.router.navigate(['/list', 'featured']);
+      // this.router.navigate(['/list', 'featured']);
     }
   }, {
 
@@ -734,7 +731,7 @@ var ReactCircular = function (_Component) {
     value: function moveHandler(evt) {
       this.hoveredNode = this.mousePos ? this.getNodeUnder(this.mousePos.x, this.mousePos.y) : null;
 
-      var box = this.canvas.getBoundingClientRect();
+      var box = this.refs.canvas.getBoundingClientRect();
       this.globalMousePos = {
         x: evt.pageX - box.left - window.pageXOffset,
         y: evt.pageY - box.top - window.pageYOffset
@@ -744,10 +741,11 @@ var ReactCircular = function (_Component) {
       evt.stopPropagation();
     }
 
-  }, {      /**
-       * Figures out which node (project) was hovered.
-       * @param evt  click event.
-       */
+  }, {
+    /**
+     * Figures out which node (project) was hovered.
+     * @param evt  click event.
+     */
     key: "hoverHandler",
     value: function hoverHandler() {
       if (!this.mousePos) {
@@ -771,7 +769,7 @@ var ReactCircular = function (_Component) {
      */
     key: "setHoverStyles",
     value: function setHoverStyles(new_hovered_node) {
-      this.canvas.style.cursor = 'pointer';
+      this.refs.canvas.style.cursor = 'pointer';
       this.hovered_project = new_hovered_node;
 
       if (new_hovered_node.data.name != this.hoveredNode.data.name && this.hoveredNode.small) {
@@ -786,15 +784,26 @@ var ReactCircular = function (_Component) {
     }
   }, {
     /**
+     * Modulo function
+     * @param a  dividend
+     * @param b  divisor
+     * @returns Remainder of quotient a / b.
+     */
+    key: "modulo",
+    value: function modulo(a, b) {
+      return (+a % (b = +b) + b) % b;
+    }
+  }, {
+    /**
      * Carousel algorithm to next/back through projects.
      * @param direction  iterator to go up or down `+1` or `-1`.
      * @param $event  mouse event.
      */
-    key: "setHoverStyles",
-    value: function setHoverStyles(direction, $event) {
+    key: "clickedArrow",
+    value: function clickedArrow(direction, $event) {
       var currentIndex = 0;
-      var newIndex = void 0;
-      var chosen = void 0;
+      var newIndex;
+      var chosen;
       var filteredNodes = this.filterLames();
 
       filteredNodes.forEach(function (node, index) {
@@ -803,7 +812,7 @@ var ReactCircular = function (_Component) {
         }
       });
 
-      newIndex = this.utils_service.modulo(currentIndex + direction, filteredNodes.length);
+      newIndex = this.modulo(currentIndex + direction, filteredNodes.length);
       this.selectNone();
       chosen = filteredNodes[newIndex];
       chosen.activate();
@@ -824,7 +833,7 @@ var ReactCircular = function (_Component) {
     value: function loadProjectDetails(evt) {
       this.projects_service.cachedColor = this.selected_project.fallbackColor || this.selected_project.primaryColor;
 
-      this.router.navigate(['/', this.selected_project.id]);
+      // this.router.navigate(['/', this.selected_project.id]);
 
       // this.utils_service.trackEvent(
       //     'Projects_Explore', 'Click', 'View ' + this.selected_project.name);
@@ -896,7 +905,7 @@ var ReactCircular = function (_Component) {
      */
     key: "clearHoverStyles",
     value: function clearHoverStyles() {
-      this.canvas.style.cursor = 'default';
+      this.refs.canvas.style.cursor = 'default';
       this.nodes.forEach(function (node) {
         node.data.focus = false;
       });
@@ -911,7 +920,7 @@ var ReactCircular = function (_Component) {
     key: "selectProject",
     value: function selectProject(node) {
       var _this3 = this;
-      this.props.selectedNode && this.props.selectedNode()
+      this.props.selectedNode && this.props.selectedNode(node)
       this.selected_project = node.data;
       setTimeout(function () {
         _this3.selected_project_changed = true;
@@ -1054,7 +1063,7 @@ var ReactCircular = function (_Component) {
       var width = this.props.width;
       var height = this.props.height;
 
-      return _react2.default.createElement('canvas', { ref: 'canvas', width: 800, height: 800 });
+      return _react2.default.createElement('canvas', { ref: 'canvas', width: width, height: height });
     }
   }]);
 
@@ -1062,15 +1071,29 @@ var ReactCircular = function (_Component) {
 }(_react.Component);
 
 ReactCircular.defaultProps = {
-  graph: {},
-  style: { width: "100%", height: "100%" }
+  width: 720,
+  height: 720,
+  data: [
+    {
+      "id": "science-journal-arduino",
+      "name": "science-journal-arduino",
+      "summary": "Science Journal Arduino Firmware",
+      "startsWith": "s",
+      "fallbackColor": "#EA4335",
+      "RGB": {
+        "r": 234,
+        "g": 67,
+        "b": 53
+      }
+    },
+  ]
 };
 ReactCircular.propTypes = {
-  graph: _propTypes2.default.object,
-  style: _propTypes2.default.object,
-  getNetwork: _propTypes2.default.func,
-  getNodes: _propTypes2.default.func,
-  getEdges: _propTypes2.default.func
+  width: _propTypes2.default.number,
+  height: _propTypes2.default.number,
+  data: _propTypes2.default.array.isRequired,
+  config: _propTypes2.default.object,
+  selectedNode: _propTypes2.default.func
 };
 
 exports.default = ReactCircular;
