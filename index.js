@@ -30,23 +30,6 @@ var _propTypes = require("prop-types");
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-// require('zone.js/dist/zone-node.js');
-
-
-// var _data = require('./data.json');
-
-// var _data2 = _interopRequireDefault(_data);
-
-// var _config = require('./config');
-
-// var _utilsService = require('./utils-service');
-
-// var _deeplinkService = require('./deeplink-service');
-
-// var _selectedNode = require('./selected-node');
-
-// var _selectedNode2 = _interopRequireDefault(_selectedNode);
-
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -478,6 +461,7 @@ var ReactCircularGraph = function (_Component) {
     this.LAME_NODE_COUNT = 25;
     this.canvas;
     this.done = false;
+    this.context;
     this.timer = window.requestAnimationFrame;
     this.frameCount = 0;
     this.nodes = [];
@@ -543,7 +527,6 @@ var ReactCircularGraph = function (_Component) {
       this.refs.canvas.dispatchEvent(new Event('mousemove'));
 
       this.refs.canvas.addEventListener('mousemove', (event) => {
-        console.log('mousemove')
         this.moveHandler(event)
       })
       this.refs.canvas.addEventListener('click', (event) => {
@@ -703,8 +686,7 @@ var ReactCircularGraph = function (_Component) {
           clicked_node.onClick();
           this.selectProject(clicked_node);
         }
-        // this.utils_service.trackEvent(
-        //     'Projects_Explore', 'Click', 'Bubble ' + clicked_node.data.name);
+
       } else {
         this.selectNone();
       }
@@ -920,11 +902,12 @@ var ReactCircularGraph = function (_Component) {
     key: "selectProject",
     value: function selectProject(node) {
       var _this3 = this;
-      this.props.selectedNode && this.props.selectedNode(node)
       this.selected_project = node.data;
+      this.props.selectedNode && this.props.selectedNode(node)
       setTimeout(function () {
-        _this3.selected_project_changed = true;
-      }, 200);
+        this.selected_project_changed = true;
+        this.props.selectedProjectChanged && this.props.selectedProjectChanged({ isProjectChanged: true })
+      }.bind(this), 200);
     }
   }, {
     /**
@@ -934,6 +917,7 @@ var ReactCircularGraph = function (_Component) {
     value: function selectNone() {
       this.selected_project = {};
       this.selected_project_changed = false;
+      this.props.selectedProjectChanged && this.props.selectedProjectChanged({ isProjectChanged: false })
 
       var _iteratorNormalCompletion2 = true;
       var _didIteratorError2 = false;
@@ -1049,21 +1033,19 @@ var ReactCircularGraph = function (_Component) {
     }
   }, {
     key: "shouldComponentUpdate",
-    value: function shouldComponentUpdate(nextProps, nextState) {
-
-    }
-  }, {
-    key: "componentDidUpdate",
-    value: function componentDidUpdate() {
-
+    value: function shouldComponentUpdate(nextProps) {
+      return nextProps.data != this.props.data
     }
   }, {
     key: "render",
     value: function render() {
       var width = this.props.width;
       var height = this.props.height;
-
       return _react2.default.createElement('canvas', { ref: 'canvas', width: width, height: height });
+      // return _react2.default.createElement('div',null,
+      //   _react2.default.createElement('canvas', { ref: 'canvas', width: 300, height: 300 }),
+      //   this.props.children(this.selected_project)
+      // );
     }
   }]);
 
@@ -1075,15 +1057,18 @@ ReactCircularGraph.defaultProps = {
   height: 720,
   data: [
     {
-      "id": "science-journal-arduino",
-      "name": "science-journal-arduino",
-      "summary": "Science Journal Arduino Firmware",
-      "startsWith": "s",
-      "fallbackColor": "#EA4335",
+      "id": "tensorflow",
+      "name": "TensorFlow",
+      "summary": "TensorFlow is a fast, flexible, and scalable open source machine learning library for research and production",
+      "iconUrlSmall": "https://www.gstatic.com/opensource/project-images/tensorflow/logo.png?rs=AGWjSYQ1HC13sEyluXwZoYWC2w2i9qsPjQ&sqp=-oaymwEICEwQTCAAUAEIttCMygU",
+      "iconUrlMedium": "https://www.gstatic.com/opensource/project-images/tensorflow/logo.png?rs=AGWjSYQ7IXg35u8B_D41kSCIRrHjJYcfng&sqp=-oaymwEKCIwBEIwBIABQAQi20IzKBQ",
+      "primaryColor": "#E26026",
+      "startsWith": "t",
+      "fallbackColor": "#34A853",
       "RGB": {
-        "r": 234,
-        "g": 67,
-        "b": 53
+        "r": 226,
+        "g": 96,
+        "b": 38
       }
     },
   ]
@@ -1093,7 +1078,8 @@ ReactCircularGraph.propTypes = {
   height: _propTypes2.default.number,
   data: _propTypes2.default.array.isRequired,
   config: _propTypes2.default.object,
-  selectedNode: _propTypes2.default.func
+  selectedNode: _propTypes2.default.func,
+  selectedProjectChanged: _propTypes2.default.func
 };
 
 exports.default = ReactCircularGraph;

@@ -2,24 +2,24 @@
   "_args": [
     [
       {
-        "raw": "react-circular-graph@^1.0.1",
+        "raw": "react-circular-graph@^1.0.2",
         "scope": null,
         "escapedName": "react-circular-graph",
         "name": "react-circular-graph",
-        "rawSpec": "^1.0.1",
-        "spec": ">=1.0.1 <1.0.1",
+        "rawSpec": "^1.0.2",
+        "spec": ">=1.0.2 <1.0.2",
         "type": "range"
       }
     ]
   ],
-  "_from": "react-circular-graph@>=1.0.1 <1.0.1",
-  "_id": "react-circular-graph@1.0.1",
+  "_from": "react-circular-graph@>=1.0.2 <1.0.2",
+  "_id": "react-circular-graph@1.0.2",
   "_inCache": true,
   "_location": "/react-circular-graph",
   "_nodeVersion": "7.10.0",
   "_npmOperationalInternal": {
     "host": "s3://npm-registry-packages",
-    "tmp": "tmp/react-circular-graph-1.0.1.tgz_1496238181363_0.8129479601047933"
+    "tmp": "tmp/react-circular-graph-1.0.2.tgz_1496238181363_0.8129479601047933"
   },
   "_npmUser": {
     "name": "anish",
@@ -28,21 +28,21 @@
   "_npmVersion": "4.2.0",
   "_phantomChildren": {},
   "_requested": {
-    "raw": "react-circular-graph@^1.0.1",
+    "raw": "react-circular-graph@^1.0.2",
     "scope": null,
     "escapedName": "react-circular-graph",
     "name": "react-circular-graph",
-    "rawSpec": "^1.0.1",
-    "spec": ">=1.0.1 <1.0.1",
+    "rawSpec": "^1.0.2",
+    "spec": ">=1.0.2 <1.0.2",
     "type": "range"
   },
   "_requiredBy": [
     "#DEV:/"
   ],
-  "_resolved": "https://registry.npmjs.org/react-circular-graph/-/react-circular-graph-1.0.1.tgz",
+  "_resolved": "https://registry.npmjs.org/react-circular-graph/-/react-circular-graph-1.0.2.tgz",
   "_shasum": "5c9afbdf12242ab499d8bd2fbfeeb1433c441fae",
   "_shrinkwrap": null,
-  "_spec": "react-circular-graph@^1.0.1",
+  "_spec": "react-circular-graph@^1.0.2",
   "author": {
     "name": "Anish M Prasad",
     "email": "anish.m.prasad@gmail.com",
@@ -62,7 +62,7 @@
   "directories": {},
   "dist": {
     "shasum": "5c9afbdf12242ab499d8bd2fbfeeb1433c441fae",
-    "tarball": "https://registry.npmjs.org/react-circular-graph/-/react-circular-graph-1.0.1.tgz"
+    "tarball": "https://registry.npmjs.org/react-circular-graph/-/react-circular-graph-1.0.2.tgz"
   },
   "gitHead": "e037c5e7e6b3c84a55d1e13e7cd64e81ebf6e3b0",
   "homepage": "https://github.com/anishmprasad/react-circular-graph#readme",
@@ -96,5 +96,5 @@
     "url": "git+https://github.com/anishmprasad/react-circular-graph.git"
   },
   "scripts": {},
-  "version": "1.0.1"
+  "version": "1.0.2"
 }
