@@ -1,6 +1,6 @@
 # react-circular-graph
 
-A react component to render knowlege circular rotational graph
+A react component to render knowledge circular rotational graph
 
 ## API
 
