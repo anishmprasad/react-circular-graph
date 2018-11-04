@@ -12,15 +12,21 @@ Example selected node object
 ```json
 
 {
-    data : {
-      RGB: {r: 251, g: 188, b: 5},
-      fallbackColor: "#FBBC05",
-      id: "fontdiff",
-      name: "FontDiff",
-      small: true,
-      startsWith: "f",
-      summary: "A tool for finding visual differences between font versions",
-    }
+    "data" : {
+      "id": "tensorflow",
+      "name": "TensorFlow",
+      "summary": "TensorFlow is a fast, flexible, and scalable open source machine learning library for research and production",
+      "iconUrlSmall": "https://www.gstatic.com/opensource/project-images/tensorflow/logo.png?rs=AGWjSYQ1HC13sEyluXwZoYWC2w2i9qsPjQ&sqp=-oaymwEICEwQTCAAUAEIttCMygU",
+      "iconUrlMedium": "https://www.gstatic.com/opensource/project-images/tensorflow/logo.png?rs=AGWjSYQ7IXg35u8B_D41kSCIRrHjJYcfng&sqp=-oaymwEKCIwBEIwBIABQAQi20IzKBQ",
+      "primaryColor": "#E26026",
+      "startsWith": "t",
+      "fallbackColor": "#34A853",
+      "RGB": {
+        "r": 226,
+        "g": 96,
+        "b": 38
+      }
+    },
     ...
 }
 
@@ -155,9 +161,6 @@ var data = [
   ]
 
 class CircularData extends Component{
-  constructor(props){
-    super(props)
-  }
   state = {
     show:true
   }
@@ -182,8 +185,8 @@ class CircularData extends Component{
 }
 function mapStateToProps(state) {
   return {
-    canvas: state.DEO.Canvas && state.DEO.Canvas.data,
-    selectedProjectChanged: state.DEO.Canvas && state.DEO.Canvas.isProjectChanged
+    canvas: state.Canvas && state.Canvas.data,
+    selectedProjectChanged: state.Canvas && state.Canvas.isProjectChanged
   }
 }
 
