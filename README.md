@@ -182,8 +182,8 @@ class CircularData extends Component{
 }
 function mapStateToProps(state) {
   return {
-    canvas: state.DEO.Canvas && state.DEO.Canvas.data,
-    selectedProjectChanged: state.DEO.Canvas && state.DEO.Canvas.isProjectChanged
+    canvas: state.Canvas && state.Canvas.data,
+    selectedProjectChanged: state.Canvas && state.Canvas.isProjectChanged
   }
 }
 
