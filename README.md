@@ -131,11 +131,7 @@ import { connect } from "react-redux";
 import './circularTemplate.scss'
 
 
-
 class circularTemplate extends Component{
-  state = {
-    show:true
-  }
   render(){
     if (this.props.canvas){
       return(
@@ -162,7 +158,7 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps, null)(Circular);
+export default connect(mapStateToProps, null)(circularTemplate);
 
 ```
 
