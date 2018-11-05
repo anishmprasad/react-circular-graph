@@ -33,7 +33,8 @@ Example selected node object
 ```
 ## Usage
 
-`ciricular.scss`
+`circularTemplate.scss`
+
 ```css
 
 .explore-projects{
@@ -121,13 +122,54 @@ canvas{
 
 ```
 
+`circularTemplate.js`
 
-```javascript
+```jsx
 
 import React,{ Fragment } from 'react';
 import { connect } from "react-redux";
+import './circularTemplate.scss'
+
+
+
+class circularTemplate extends Component{
+  state = {
+    show:true
+  }
+  render(){
+    if (this.props.canvas){
+      return(
+        <div className={this.props.selectedProjectChanged ? 'selected-project active' : "selected-project unactive"}>
+          <div className="project-summary">
+            <img src={`${this.props.canvas.iconUrlMedium}`} alt="logo" />
+            <h5>{this.props.canvas.name}</h5>
+            <p>{this.props.canvas.summary}</p>
+          </div>
+          <a className="text-btn" href={`${this.props.canvas.projecturl}`}>
+              View Project
+          </a>
+        </div>
+      )
+    }else{
+      return null
+    }
+  }
+}
+function mapStateToProps(state) {
+  return {
+    canvas: state.Canvas && state.Canvas.data,
+    selectedProjectChanged: state.Canvas && state.Canvas.isProjectChanged
+  }
+}
+
+export default connect(mapStateToProps, null)(Circular);
+
+```
+
+```jsx
+import React,{ Fragment } from 'react';
 import ReactCircularGraph from 'react-circular-graph';
-import './circular.scss'
+import circularTemplate from './circularTemplate';
 
 var config = {
     "ENABLE_ERROR_REPORTING": true,
@@ -160,38 +202,6 @@ var data = [
     },
   ]
 
-class CircularData extends Component{
-  state = {
-    show:true
-  }
-  render(){
-    if (this.props.canvas){
-      return(
-        <div className={this.props.selectedProjectChanged ? 'selected-project active' : "selected-project unactive"}>
-          <div className="project-summary">
-            <img src={`${this.props.canvas.iconUrlMedium}`} alt="logo" />
-            <h5>{this.props.canvas.name}</h5>
-            <p>{this.props.canvas.summary}</p>
-          </div>
-          <a className="text-btn" href={`${this.props.canvas.projecturl}`}>
-              View Project
-          </a>
-        </div>
-      )
-    }else{
-      return null
-    }
-  }
-}
-function mapStateToProps(state) {
-  return {
-    canvas: state.Canvas && state.Canvas.data,
-    selectedProjectChanged: state.Canvas && state.Canvas.isProjectChanged
-  }
-}
-
-export default connect(mapStateToProps, null)(Circular);
-
 React.render(
     <Fragment>
         <ReactCircularGraph
@@ -200,8 +210,9 @@ React.render(
             data = {data}
             config = {config}
             selectedNode = {(node)=>console.log(node)}
+            selectedProjectChanged={(object) => { this.selectedProjectChanged(object) }}            
         />
-        <CircularData />
+        <circularTemplate />
     </Fragment>, document.body);
     
 ```
