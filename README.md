@@ -1,6 +1,6 @@
 # react-circular-graph
 
-A react component to render knowledge circular rotational graph
+A react component to render animated circular rotational knowledge graph
 
 ## API
 
@@ -32,6 +32,16 @@ Example selected node object
 
 ```
 ## Usage
+
+`index.scss`
+
+```css
+
+.react-cirular-graph{
+  position:relative
+}
+
+```
 
 `circularTemplate.scss`
 
@@ -122,16 +132,16 @@ canvas{
 
 ```
 
-`circularTemplate.js`
+`CircularTemplate.js`
 
 ```jsx
 
 import React,{ Fragment } from 'react';
 import { connect } from "react-redux";
-import './circularTemplate.scss'
+import './CircularTemplate.scss'
 
 
-class circularTemplate extends Component{
+class CircularTemplate extends Component{
   render(){
     if (this.props.canvas){
       return(
@@ -158,14 +168,14 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps, null)(circularTemplate);
+export default connect(mapStateToProps, null)(CircularTemplate);
 
 ```
 
 ```jsx
 import React,{ Fragment } from 'react';
 import ReactCircularGraph from 'react-circular-graph';
-import circularTemplate from './circularTemplate';
+import CircularTemplate from './CircularTemplate';
 
 var config = {
     "ENABLE_ERROR_REPORTING": true,
@@ -199,7 +209,7 @@ var data = [
   ]
 
 React.render(
-    <Fragment>
+    <div className="react-cirular-graph">
         <ReactCircularGraph
             width={720}
             height={720}
@@ -208,7 +218,7 @@ React.render(
             selectedNode = {(node)=>console.log(node)}
             selectedProjectChanged={(object) => { this.selectedProjectChanged(object) }}            
         />
-        <circularTemplate />
+        <CircularTemplate />
     </Fragment>, document.body);
     
 ```
