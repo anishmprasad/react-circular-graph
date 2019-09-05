@@ -219,7 +219,7 @@ React.render(
             selectedProjectChanged={(object) => { this.selectedProjectChanged(object) }}            
         />
         <CircularTemplate />
-    </Fragment>, document.body);
+    </div>, document.body);
     
 ```
 
